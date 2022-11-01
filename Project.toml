@@ -1,0 +1,4 @@
+name = "HepMC"
+uuid = "8c5db9d4-012b-4375-9c84-9f6ebef35d36"
+authors = ["Quan-feng WU <wuquanfeng@ihep.ac.cn>"]
+version = "0.1.0"
