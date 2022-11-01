@@ -1,6 +1,6 @@
 module  HepMC
 
-using   Particle
+using   StructParticle
 
 include("Read.jl")
 include("ReadHepMC2.jl")
