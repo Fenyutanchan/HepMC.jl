@@ -4,15 +4,15 @@ function read_HepMC3_file(
     event_begin_indices =   findall(
         line -> (!isempty(line) && first(line) == 'E'),
         HepMC_contents
-    )
-    event_end_indices   =   event_begin_indices[2:end] .- 1
+    )   #   Find all Event line.
+    event_end_indices   =   event_begin_indices[2:end] .- 1 #   Find all Event endding line except the last one.
     push!(
         event_end_indices,
         findfirst(
             line -> (line == "HepMC::Asciiv3-END_EVENT_LISTING"),
             HepMC_contents
         ) - 1
-    )
+    )   #   Find the last one Event endding line.
 
     event_list  =   (
         (begin_index, end_index) -> (
@@ -47,7 +47,7 @@ function read_HepMC3_Event(event_block::Vector{String})::Event
     )
 
     vertex_list             =   event_block[vertex_indices]
-    no_out_particle_list    =   (sort ∘ union)(
+    no_out_particle_list    =   union(
         (
             (
                 line -> Meta.parse.(
@@ -59,6 +59,8 @@ function read_HepMC3_Event(event_block::Vector{String})::Event
             ).(vertex_list)
         )...
     )
+    push!(no_out_particle_list, [1, 3]...)
+    sort!(no_out_particle_list)
     deleteat!(particle_indices, no_out_particle_list)
 
     particle_list   =   (
