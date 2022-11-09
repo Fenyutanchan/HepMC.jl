@@ -46,8 +46,8 @@ function read_HepMC3_Event(event_block::Vector{<:AbstractString})::Event
         event_block
     )
 
-    vertex_list             =   event_block[vertex_indices]
-    no_out_particle_list    =   union(
+    vertex_list                     =   event_block[vertex_indices]
+    no_out_particle_indices         =   union(
         (
             (
                 line -> Meta.parse.(
@@ -59,12 +59,18 @@ function read_HepMC3_Event(event_block::Vector{<:AbstractString})::Event
             ).(vertex_list)
         )...
     )
-    push!(no_out_particle_list, 1, 3)
-    sort!(no_out_particle_list)
-    deleteat!(particle_indices, no_out_particle_list)
-    for index ∈ particle_indices
-        println(event_block[index])
-    end
+    non_physical_particle_indices   =   findall(
+        index -> (
+            (last ∘ split)(event_block[index]) ∉ ["1", "2"]
+        ),
+        particle_indices
+    )
+    delete_particle_indices         =   (sort ∘ union)(
+        no_out_particle_indices,
+        non_physical_particle_indices
+    )
+    deleteat!(particle_indices, delete_particle_indices)
+    
 
     particle_list   =   (
         line -> begin
