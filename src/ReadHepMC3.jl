@@ -37,39 +37,42 @@ function read_HepMC3_Event(event_block::Vector{<:AbstractString})::Event
         ]
     )
 
-    vertex_indices      =   findall(
-        line -> (first(line) == 'V'),
-        event_block
-    )
-    particle_indices    =   findall(
-        line -> (first(line) == 'P'),
+    # vertex_indices      =   findall(
+    #     line -> (first(line) == 'V'),
+    #     event_block
+    # )
+    physical_particle_indices   =   findall(
+        line -> (
+            first(line) == 'P' &&
+            (last ∘ split)(line) == "1"
+        ),
         event_block
     )
 
-    vertex_list                     =   event_block[vertex_indices]
-    no_out_particle_indices         =   union(
-        (
-            (
-                line -> Meta.parse.(
-                    split(
-                        split(line)[4][begin+1:end-1],
-                        ","
-                    )
-                )
-            ).(vertex_list)
-        )...
-    )
-    non_physical_particle_indices   =   findall(
-        index -> (
-            (last ∘ split)(event_block[index]) ∉ ["1", "2"]
-        ),
-        particle_indices
-    )
-    delete_particle_indices         =   (sort ∘ union)(
-        no_out_particle_indices,
-        non_physical_particle_indices
-    )
-    deleteat!(particle_indices, delete_particle_indices)
+    # vertex_list                     =   event_block[vertex_indices]
+    # no_out_particle_indices         =   union(
+    #     (
+    #         (
+    #             line -> Meta.parse.(
+    #                 split(
+    #                     split(line)[4][begin+1:end-1],
+    #                     ","
+    #                 )
+    #             )
+    #         ).(vertex_list)
+    #     )...
+    # )
+    # non_physical_particle_indices   =   findall(
+    #     index -> (
+    #         (last ∘ split)(event_block[index]) ∉ ["1", "2"]
+    #     ),
+    #     particle_indices
+    # )
+    # delete_particle_indices         =   (sort ∘ union)(
+    #     no_out_particle_indices,
+    #     non_physical_particle_indices
+    # )
+    # deleteat!(particle_indices, delete_particle_indices)
     
 
     particle_list   =   (
@@ -83,7 +86,7 @@ function read_HepMC3_Event(event_block::Vector{<:AbstractString})::Event
                 tmp[6]
             )
         end
-    ).(event_block[particle_indices])
+    ).(event_block[physical_particle_indices])
 
     return  Event(
         event_weight,
