@@ -25,7 +25,7 @@ function read_HepMC3_file(
     return  event_list
 end
 
-function read_HepMC3_Event(event_block::Vector{String})::Event
+function read_HepMC3_Event(event_block::Vector{<:AbstractString})::Event
     @assert (first ∘ first)(event_block) == 'E'
 
     event_weight    =   (Meta.parse ∘ last ∘ split)(
@@ -59,9 +59,12 @@ function read_HepMC3_Event(event_block::Vector{String})::Event
             ).(vertex_list)
         )...
     )
-    push!(no_out_particle_list, [1, 3]...)
+    push!(no_out_particle_list, 1, 3)
     sort!(no_out_particle_list)
     deleteat!(particle_indices, no_out_particle_list)
+    for index ∈ particle_indices
+        println(event_block[index])
+    end
 
     particle_list   =   (
         line -> begin
