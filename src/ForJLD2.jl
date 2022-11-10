@@ -13,6 +13,16 @@ end
 read_events_JLD2(file_name::String, index::Int)::Event  =   read_events_JLD2(
     file_name, "$index"
 )
+function read_events_JLD2(file_name::String)::Vector{Event}
+    @assert splitext(file_name)[end] == ".jld2"
+
+    jld_file    =   jldopen(file_name, "r")
+    jld_keys    =   sort(Meta.parse.(keys(jld_file)))
+    event_list  =   Event[Event(jld_file["$key"]) for key ∈ jld_keys]
+    close(jld_file)
+    
+    return event_list
+end
 
 function write_events_JLD2(file_name::String, event_list::Vector{Event})::Nothing
     if splitext(file_name)[end] != ".jld2"
