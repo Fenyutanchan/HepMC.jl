@@ -1,6 +1,5 @@
 module  HepMC
 
-    using   JLD2
     using   StructParticle
 
     include("Read.jl")
